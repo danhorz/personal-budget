@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+    
+    <main>
+        <form id="formulario">
+            <h1>Nueva Transacción</h1>
+            <p>Monto($):</p>
+            <input type="number"  id="input-monto">
+            <p>Tipo:</p>
+            <select name="" id="tipo">
+                <option value="ingreso">Ingreso</option>
+                <option value="gasto">Gasto</option>
+            </select>
+            <button type="submit">Agregar Transacción</button>
+        </form>
+        <div id="contenedor-historial">
+            <h1>Nueva transacción</h1>
+            <div id="contenido"></div>   
+            <button id="btn-ordenar">Ordenar por Monto</button>
+        </div>
+
+    </main>
+<script src="app.js"></script>
+</body>
+</html>
