@@ -1,32 +1,62 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
-    <link rel="stylesheet" href="./styles.css">
+    <link rel="stylesheet" href="./css/styles.css">
 </head>
+
 <body>
-    
+    <header></header>
     <main>
-        <form id="formulario">
-            <h1>Nueva Transacción</h1>
-            <p>Monto($):</p>
-            <input type="number"  id="input-monto">
-            <p>Tipo:</p>
-            <select name="" id="tipo">
-                <option value="ingreso">Ingreso</option>
-                <option value="gasto">Gasto</option>
-            </select>
-            <button type="submit">Agregar Transacción</button>
-        </form>
-        <div id="contenedor-historial">
-            <h1>Nueva transacción</h1>
-            <div id="contenido"></div>   
-            <button id="btn-ordenar">Ordenar por Monto</button>
-        </div>
+        <h1>Mi cartera</h1>
+        <section>
+            <div id="contenedor-Balance">
+                <h2>Balance Total</h2>
+                <p id="contenido-balance"></p>
+            </div>
+        </section>
+        <section>
+            <div id="contenedor-Promedio-Gastos">
+                <h2>Promedio de Ingresos</h2>
+                <p id="contenido-Promedio-Ingresos"></p>
+            </div>
+        </section>
+        <section>
+            <div id="contenedor-Promedio-Gastos">
+                <h2>Promedio de Gastos</h2>
+                <p id="contenido-Promedio-Gastos"></p>
+            </div>
+        </section>
+        <section>
+            <form id="formulario">
+                <h2>Nueva Transacción</h2>
+                <p>Monto(S/.):</p>
+                <input type="number" id="input-monto">
+                <p>Tipo:</p>
+                <select name="" id="tipo">
+                    <option value="ingreso">Ingreso</option>
+                    <option value="gasto">Gasto</option>
+                </select>
+                <button type="submit">Agregar Transacción</button>
+            </form>
+        </section>
+        <section>
+            <div id="contenedor-historial">
+                <h2>Historial</h2>
+                <div id="contenido"></div>
+                <button id="btn-ordenar">Ordenar por Monto</button>
+            </div>
+        </section>
+    <footer></footer>    
 
     </main>
-<script src="app.js"></script>
+    <script src="./js/utils.js"></script>
+    <script src="./js/validators.js"></script>
+   
+    <script src="./js/app.js"></script>
 </body>
+
 </html>
