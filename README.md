@@ -4,8 +4,10 @@
 
 * Se añadio untils y validators
 
-* Se añadio balance 
+* Se añadio balance, Promedio de gastos y ingresos  
 
 ## contenido
 
 * Uso para contabilizar ganancias y perdidas individulaes
+
+* Promedio de gastos y ingresos  
