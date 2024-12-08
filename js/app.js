@@ -24,6 +24,8 @@ formulario.addEventListener('submit', function (event) {
     event.preventDefault();
 
     registrarTransaccion(tipo.value, parseFloat(monto.value));
+    calcularPromedioIngresos(transacciones);
+    calcularPromedioGastos(transacciones);
 
 });
 function registrarTransaccion(tipo, monto) {
@@ -38,12 +40,10 @@ function registrarTransaccion(tipo, monto) {
             transacciones.push(temp)
         } //gasto
         else {
-            if (temp >= 0) {
+          
                 elemento.textContent = this.fecha + " " + temp.tipo + " -" + temp.monto;
                 transacciones.push(temp)
-            } else {
-                alert("ingrese un ingreso");
-            }
+            
 
 
         }
@@ -79,3 +79,17 @@ botonOrdenar.addEventListener('click', function () {
     });
 
 })
+
+function calcularPromedioIngresos(transacciones) {
+    const ingresos = transacciones.filter(t => t.tipo === "ingreso");
+    const totalIngresos = ingresos.reduce((suma, ingreso) => suma + ingreso.monto, 0);
+    const promedioIngresos = ingresos.length > 0 ? totalIngresos / ingresos.length : 0;
+    pIngresos.textContent = formatearMonto(promedioIngresos, "S/.");
+}
+
+function calcularPromedioGastos(transacciones) {
+    const gastos = transacciones.filter(t => t.tipo === "gasto");
+    const totalGastos = gastos.reduce((suma, gasto) => suma + gasto.monto, 0);
+    const promedioGastos = gastos.length > 0 ? totalGastos / gastos.length : 0;
+    pGastos.textContent = formatearMonto(promedioGastos, "S/.");
+}
