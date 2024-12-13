@@ -10,4 +10,8 @@
 
 * Uso para contabilizar ganancias y perdidas individulaes
 
-* Promedio de gastos y ingresos  
+* Promedio de gastos y ingresos
+
+## Actualizacion
+
+* Se optimizaron las funciones.
