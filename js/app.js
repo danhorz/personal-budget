@@ -21,34 +21,34 @@ formulario.addEventListener('submit', function (event) {
 function handleSubmit(valorMonto) {
     const montoNumerico = parseFloat(valorMonto);
     if (montoNumerico > 0) {
-
+        // Crear la nueva transacción
         let transaccion = new Transaction(tipo.value, montoNumerico);
 
+        // Agregar la transacción al presupuesto primero
+        presupuesto.add(transaccion);
 
+        // Validar la transacción antes de procesar
         if (isValidTransaction(transaccion)) {
-
+            // Validar el presupuesto después de agregar la transacción
             if (isValidBudget(presupuesto)) {
-
-                presupuesto.add(transaccion);
-
+                // Calcular y actualizar los promedios
                 calcularPromedioIngresos(presupuesto.transacciones);
                 calcularPromedioGastos(presupuesto.transacciones);
 
+                // Crear elemento del historial y agregar al DOM
                 const elemento = document.createElement("p");
                 elemento.textContent = `${transaccion.getFormattedDate()} ${transaccion.getSignedAmount()} ${transaccion.tipo}`;
                 historial.appendChild(elemento);
 
+                // Actualizar balance
                 balance.textContent = formatearMonto(presupuesto.calculateTotal(), "S/.");
-            } else {
-                console.log("Presupuesto no válido");
             }
-        } else {
-            console.log("Transacción no válida");
         }
     } else {
         alert("Por favor, ingrese un monto válido.");
     }
 }
+
 
 
 botonOrdenar.addEventListener('click', function () {
