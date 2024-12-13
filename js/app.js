@@ -19,20 +19,37 @@ formulario.addEventListener('submit', function (event) {
 });
 
 function handleSubmit(valorMonto) {
-    const montoNumerico = parseFloat(valorMonto); 
+    const montoNumerico = parseFloat(valorMonto);
     if (montoNumerico > 0) {
+
         let transaccion = new Transaction(tipo.value, montoNumerico);
-        presupuesto.add(transaccion);
-        calcularPromedioIngresos(presupuesto.transacciones);
-        calcularPromedioGastos(presupuesto.transacciones);
-        const elemento = document.createElement("p");
-        elemento.textContent = `${transaccion.getFormattedDate()} ${transaccion.getSignedAmount()} ${transaccion.tipo}`;
-        historial.appendChild(elemento);
-        balance.textContent = formatearMonto(presupuesto.calculateTotal(), "S/.");
+
+
+        if (isValidTransaction(transaccion)) {
+
+            if (isValidBudget(presupuesto)) {
+
+                presupuesto.add(transaccion);
+
+                calcularPromedioIngresos(presupuesto.transacciones);
+                calcularPromedioGastos(presupuesto.transacciones);
+
+                const elemento = document.createElement("p");
+                elemento.textContent = `${transaccion.getFormattedDate()} ${transaccion.getSignedAmount()} ${transaccion.tipo}`;
+                historial.appendChild(elemento);
+
+                balance.textContent = formatearMonto(presupuesto.calculateTotal(), "S/.");
+            } else {
+                console.log("Presupuesto no válido");
+            }
+        } else {
+            console.log("Transacción no válida");
+        }
     } else {
         alert("Por favor, ingrese un monto válido.");
     }
 }
+
 
 botonOrdenar.addEventListener('click', function () {
     historial.innerHTML = "";
