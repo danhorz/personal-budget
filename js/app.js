@@ -8,6 +8,8 @@ const balance = document.getElementById("contenido-balance");
 const pIngresos = document.getElementById("contenido-Promedio-Ingresos");
 const pGastos = document.getElementById("contenido-Promedio-Gastos");
 const historial = document.getElementById("contenido");
+const botonUltimo=document.getElementById("btn-registrof");
+const botonTodo=document.getElementById("btn-registrot")
 let temp = 0;
 balance.textContent = formatearMonto(temp, "S/.");
 pIngresos.textContent = formatearMonto(temp, "S/.");
@@ -48,8 +50,35 @@ function handleSubmit(valorMonto) {
         alert("Por favor, ingrese un monto válido.");
     }
 }
+botonTodo.addEventListener('click', function () {
+    if (presupuesto.transacciones.length > 0) {
+        presupuesto.transacciones = [];
 
+        // Actualizar DOM
+        historial.innerHTML = "";
+        balance.textContent = formatearMonto(0, "S/.");
+        pIngresos.textContent = formatearMonto(0, "S/.");
+        pGastos.textContent = formatearMonto(0, "S/.");
+    } else {
+        alert("No hay transacciones para eliminar.");
+    }
+});
 
+botonUltimo.addEventListener('click', function () {
+    if (presupuesto.transacciones.length > 0) {
+        
+        const ultimaTransaccion = presupuesto.transacciones[presupuesto.transacciones.length - 1];
+        presupuesto.remove(ultimaTransaccion.id);
+
+        // Actualizar DOM
+        historial.removeChild(historial.lastChild);
+        balance.textContent = formatearMonto(presupuesto.calculateTotal(), "S/.");
+        calcularPromedioIngresos(presupuesto.transacciones);
+        calcularPromedioGastos(presupuesto.transacciones);
+    } else {
+        alert("No hay transacciones para eliminar.");
+    }
+});
 
 botonOrdenar.addEventListener('click', function () {
     historial.innerHTML = "";
