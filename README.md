@@ -16,3 +16,4 @@
 
 * Se optimizaron las funciones.
 * Se añadio eliminaciones al historial
+* se añadio localStorage

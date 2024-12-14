@@ -37,8 +37,9 @@ function actualizarGrafico(transacciones) {
         .filter(t => t.tipo === "gasto")
         .reduce((suma, t) => suma + parseFloat(t.monto), 0);
 
+    // Actualizamos los datos del gráfico
     chart.data.datasets[0].data = [totalIngresos, totalGastos];
-    chart.update();
+    chart.update(); // Refrescamos el gráfico para mostrar los nuevos datos
 }
 
 // Crear instancias globales
@@ -59,9 +60,61 @@ pIngresos.textContent = formatearMonto(temp, "S/.");
 pGastos.textContent = formatearMonto(temp, "S/.");
 
 document.addEventListener('DOMContentLoaded', () => {
+    // Inicializar el gráfico primero
     inicializarGrafico();
+    
+    // Recuperar las transacciones desde localStorage
+    cargarTransaccionesDeLocalStorage();
 });
 
+// Función para cargar las transacciones desde localStorage
+function cargarTransaccionesDeLocalStorage() {
+    const transaccionesGuardadas = localStorage.getItem('transacciones');
+    if (transaccionesGuardadas) {
+        presupuesto.transacciones = JSON.parse(transaccionesGuardadas).map(transaccionData => {
+            let transaccion = new Transaction(transaccionData.tipo, transaccionData.monto);
+            transaccion.id = transaccionData.id;
+            transaccion.fecha = new Date(transaccionData.fecha);
+            return transaccion;
+        });
+
+        // Actualizar historial con las transacciones recuperadas
+        historial.innerHTML = ""; // Limpiar historial
+        presupuesto.transacciones.forEach((transaccion) => {
+            const elemento = document.createElement("p");
+            const botonEliminar = document.createElement("button");
+            botonEliminar.textContent = "Eliminar";
+            botonEliminar.classList.add("btn-eliminar");
+            botonEliminar.addEventListener("click", function () {
+                presupuesto.remove(transaccion.id);
+                elemento.remove();
+                balance.textContent = formatearMonto(presupuesto.calculateTotal(), "S/.");
+                calcularPromedioIngresos(presupuesto.transacciones);
+                calcularPromedioGastos(presupuesto.transacciones);
+                actualizarGrafico(presupuesto.transacciones);
+                guardarTransaccionesEnLocalStorage(); // Guardar cambios en localStorage
+            });
+
+            elemento.textContent = `${transaccion.getFormattedDate()} ${transaccion.getSignedAmount()} ${transaccion.tipo}`;
+            elemento.appendChild(botonEliminar);
+            historial.appendChild(elemento);
+        });
+
+        // Actualizar balance y gráfico con las transacciones recuperadas
+        balance.textContent = formatearMonto(presupuesto.calculateTotal(), "S/.");
+        calcularPromedioIngresos(presupuesto.transacciones);
+        calcularPromedioGastos(presupuesto.transacciones);
+        actualizarGrafico(presupuesto.transacciones); // Actualizamos el gráfico
+    }
+}
+
+// Guardar las transacciones en localStorage
+function guardarTransaccionesEnLocalStorage() {
+    const transaccionesGuardadas = JSON.stringify(presupuesto.transacciones);
+    localStorage.setItem('transacciones', transaccionesGuardadas);
+}
+
+// Función para manejar el envío del formulario
 formulario.addEventListener('submit', function (event) {
     event.preventDefault();
     handleSubmit(parseFloat(monto.value));
@@ -75,7 +128,7 @@ function handleSubmit(valorMonto) {
 
         // Agregar la transacción al presupuesto primero
         presupuesto.add(transaccion);
-        actualizarGrafico(presupuesto.transacciones);
+        actualizarGrafico(presupuesto.transacciones); // Actualizar gráfico
 
         // Validar la transacción antes de procesar
         if (isValidTransaction(transaccion)) {
@@ -96,7 +149,8 @@ function handleSubmit(valorMonto) {
                     balance.textContent = formatearMonto(presupuesto.calculateTotal(), "S/.");
                     calcularPromedioIngresos(presupuesto.transacciones);
                     calcularPromedioGastos(presupuesto.transacciones);
-                    actualizarGrafico(presupuesto.transacciones);
+                    actualizarGrafico(presupuesto.transacciones); // Actualizamos el gráfico
+                    guardarTransaccionesEnLocalStorage(); // Guardar cambios en localStorage
                 });
 
                 elemento.textContent = `${transaccion.getFormattedDate()} ${transaccion.getSignedAmount()} ${transaccion.tipo}`;
@@ -105,6 +159,7 @@ function handleSubmit(valorMonto) {
 
                 // Actualizar balance
                 balance.textContent = formatearMonto(presupuesto.calculateTotal(), "S/.");
+                guardarTransaccionesEnLocalStorage(); // Guardar cambios en localStorage
             }
         }
     } else {
@@ -112,68 +167,7 @@ function handleSubmit(valorMonto) {
     }
 }
 
-botonTodo.addEventListener('click', function () {
-    if (presupuesto.transacciones.length > 0) {
-        presupuesto.transacciones = [];
-
-        // Actualizar DOM
-        historial.innerHTML = "";
-        balance.textContent = formatearMonto(0, "S/.");
-        pIngresos.textContent = formatearMonto(0, "S/.");
-        pGastos.textContent = formatearMonto(0, "S/.");
-        actualizarGrafico(presupuesto.transacciones);
-    } else {
-        alert("No hay transacciones para eliminar.");
-    }
-});
-
-
-botonOrdenar.addEventListener('click', function () {
-    // Ordenamos las transacciones por tipo (ingreso/gasto) y luego, dentro de los gastos, de mayor a menor
-    presupuesto.transacciones.sort((a, b) => {
-        // Primero comparamos por tipo: 'ingreso' debería ir antes que 'gasto'
-        if (a.tipo === 'ingreso' && b.tipo === 'gasto') return -1;
-        if (a.tipo === 'gasto' && b.tipo === 'ingreso') return 1;
-
-        // Si ambos son del mismo tipo, ordenamos los gastos de mayor a menor
-        if (a.tipo === 'gasto' && b.tipo === 'gasto') {
-            return b.monto - a.monto; // De mayor a menor
-        }
-
-        return 0; // Si son ingresos, no hace falta ordenar dentro de los ingresos
-    });
-
-    // Volver a llenar el historial con las transacciones ordenadas
-    historial.innerHTML = ""; // Limpiamos el historial para re-agregar las transacciones ordenadas
-
-    presupuesto.transacciones.forEach((transaccion) => {
-        const elemento = document.createElement("p");
-        const botonEliminar = document.createElement("button");
-        botonEliminar.textContent = "Eliminar";
-        botonEliminar.classList.add("btn-eliminar");
-
-        // Agregar la funcionalidad de eliminar
-        botonEliminar.addEventListener("click", function () {
-            presupuesto.remove(transaccion.id);
-            elemento.remove();
-            balance.textContent = formatearMonto(presupuesto.calculateTotal(), "S/.");
-            calcularPromedioIngresos(presupuesto.transacciones);
-            calcularPromedioGastos(presupuesto.transacciones);
-            actualizarGrafico(presupuesto.transacciones);
-        });
-
-        elemento.textContent = `${transaccion.getFormattedDate()} ${transaccion.getSignedAmount()} ${transaccion.tipo}`;
-        elemento.appendChild(botonEliminar);
-        historial.appendChild(elemento);
-    });
-
-    // Actualizamos los promedios y el gráfico después de ordenar
-    calcularPromedioIngresos(presupuesto.transacciones);
-    calcularPromedioGastos(presupuesto.transacciones);
-    actualizarGrafico(presupuesto.transacciones);
-});
-
-
+// Funciones adicionales para calcular promedios
 function calcularPromedioIngresos(transacciones) {
     const ingresos = transacciones.filter(t => t.tipo === "ingreso");
     const totalIngresos = ingresos.reduce((suma, ingreso) => suma + parseFloat(ingreso.monto), 0);
