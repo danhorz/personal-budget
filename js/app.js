@@ -8,7 +8,7 @@ const balance = document.getElementById("contenido-balance");
 const pIngresos = document.getElementById("contenido-Promedio-Ingresos");
 const pGastos = document.getElementById("contenido-Promedio-Gastos");
 const historial = document.getElementById("contenido");
-const botonUltimo=document.getElementById("btn-registrof");
+
 const botonTodo=document.getElementById("btn-registrot")
 let temp = 0;
 balance.textContent = formatearMonto(temp, "S/.");
@@ -39,7 +39,19 @@ function handleSubmit(valorMonto) {
 
                 // Crear elemento del historial y agregar al DOM
                 const elemento = document.createElement("p");
+                const botonEliminar = document.createElement("button");
+                botonEliminar.textContent = "Eliminar";
+                botonEliminar.classList.add("btn-eliminar");
+                botonEliminar.addEventListener("click", function () {
+                    presupuesto.remove(transaccion.id);
+                    elemento.remove();
+                    balance.textContent = formatearMonto(presupuesto.calculateTotal(), "S/.");
+                    calcularPromedioIngresos(presupuesto.transacciones);
+                    calcularPromedioGastos(presupuesto.transacciones);
+                });
+
                 elemento.textContent = `${transaccion.getFormattedDate()} ${transaccion.getSignedAmount()} ${transaccion.tipo}`;
+                elemento.appendChild(botonEliminar);
                 historial.appendChild(elemento);
 
                 // Actualizar balance
@@ -64,21 +76,7 @@ botonTodo.addEventListener('click', function () {
     }
 });
 
-botonUltimo.addEventListener('click', function () {
-    if (presupuesto.transacciones.length > 0) {
-        
-        const ultimaTransaccion = presupuesto.transacciones[presupuesto.transacciones.length - 1];
-        presupuesto.remove(ultimaTransaccion.id);
 
-        // Actualizar DOM
-        historial.removeChild(historial.lastChild);
-        balance.textContent = formatearMonto(presupuesto.calculateTotal(), "S/.");
-        calcularPromedioIngresos(presupuesto.transacciones);
-        calcularPromedioGastos(presupuesto.transacciones);
-    } else {
-        alert("No hay transacciones para eliminar.");
-    }
-});
 
 botonOrdenar.addEventListener('click', function () {
     historial.innerHTML = "";
