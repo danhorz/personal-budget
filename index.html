@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
     <link rel="stylesheet" href="./css/styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 
 <body>
@@ -52,9 +53,19 @@
                 <button id="btn-ordenar">Ordenar por Monto</button>
             </div>
         </section>
+
+        <section>
+            <h2>Gráfico de Ingresos vs Gastos</h2>
+            <canvas id="chartIngresosGastos" width="400" height="200"></canvas>
+        </section>
+        
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
         <footer></footer>
 
     </main>
+    
+    <script src="./js/Chart.js"></script>
     <script src="./js/budget.js"></script>
     <script src="./js/transaction.js"></script>
     <script src="./js/validators.js"></script>
