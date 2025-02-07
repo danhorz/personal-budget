@@ -41,6 +41,15 @@ function actualizarGrafico(transacciones) {
     chart.data.datasets[0].data = [totalIngresos, totalGastos];
     chart.update(); // Refrescamos el gráfico para mostrar los nuevos datos
 }
+document.getElementById("btn-buscar").addEventListener("click", () => {
+    const filtro = document.getElementById("busqueda").value;
+    searchTransactions(filtro);
+});
+
+// Permitir búsqueda en tiempo real mientras el usuario escribe
+document.getElementById("busqueda").addEventListener("input", (event) => {
+    searchTransactions(event.target.value);
+});
 
 // Crear instancias globales
 var presupuesto = new Budget();
@@ -184,4 +193,52 @@ function calcularPromedioGastos(transacciones) {
 
 function formatearMonto(monto, moneda) {
     return `${moneda} ${monto.toFixed(2)}`;
+}
+function searchTransactions(keyword) {
+    const filtro = keyword.trim().toLowerCase();
+    historial.innerHTML = ""; // Limpia el historial antes de actualizarlo
+
+    const resultados = presupuesto.transacciones.filter(transaccion => 
+        transaccion.descripcion && transaccion.descripcion.toLowerCase().includes(filtro)
+    );
+
+    if (filtro === "") {
+        // Si no hay filtro, muestra todas las transacciones
+        presupuesto.transacciones.forEach(transaccion => agregarTransaccionAlDOM(transaccion));
+    } else if (resultados.length === 0) {
+        historial.innerHTML = "<p>No se encontraron transacciones.</p>";
+    } else {
+        resultados.forEach(transaccion => agregarTransaccionAlDOM(transaccion));
+    }
+}
+
+// Función auxiliar para agregar transacción al historial
+function agregarTransaccionAlDOM(transaccion) {
+    const elemento = document.createElement("p");
+    const botonEliminar = document.createElement("button");
+    
+    botonEliminar.textContent = "Eliminar";
+    botonEliminar.classList.add("btn-eliminar");
+    botonEliminar.addEventListener("click", function () {
+        presupuesto.remove(transaccion.id);
+        elemento.remove();
+        balance.textContent = formatearMonto(presupuesto.calculateTotal(), "S/.");
+        calcularPromedioIngresos(presupuesto.transacciones);
+        calcularPromedioGastos(presupuesto.transacciones);
+        actualizarGrafico(presupuesto.transacciones);
+        guardarTransaccionesEnLocalStorage(); // Guardar cambios en localStorage
+    });
+
+    elemento.textContent = `${transaccion.getFormattedDate()} ${transaccion.getSignedAmount()} ${transaccion.tipo} - ${transaccion.descripcion}`;
+    elemento.appendChild(botonEliminar);
+    historial.appendChild(elemento);
+}
+
+function formatAmount(monto) {
+    return monto.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, "$&, ");
+}
+
+function getMonthName(fecha) {
+    const meses = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
+    return meses[new Date(fecha).getMonth()];
 }
